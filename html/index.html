@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Generate SEPA QR Code</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      #main {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+      }
+      #inputs {
+        width: 50vw;
+      }
+      #output {
+        width: 50vw;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      input,
+      button {
+        padding: 10px;
+        margin: 10px 0;
+        width: 100%;
+        font-size: 16px;
+      }
+
+      .input-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+      }
+
+      .input-container input {
+        width: 45%;
+        box-sizing: border-box;
+      }
+
+      .input-container button {
+        width: 100%;
+      }
+
+      #qr-code {
+        margin-top: 20px;
+      }
+
+      #url-container {
+        margin-top: 10px;
+        font-size: 16px;
+      }
+
+      #url-container input {
+        width: 100%;
+        font-size: 16px;
+        padding: 10px;
+        background: #f0f0f0;
+        border: 1px solid #ccc;
+        cursor: not-allowed;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="main">
+      <div id="inputs">
+        <div class="input-container container">
+          <h1>Generate SEPA QR Code</h1>
+
+          <!-- Form to input payment details -->
+          <form id="paymentForm">
+            <input
+              type="text"
+              id="method"
+              placeholder="method"
+              required
+              value="sepa"
+            />
+            <input type="text" id="iban" placeholder="IBAN" required />
+            <input type="text" id="bic" placeholder="BIC" />
+            <input type="text" id="name" placeholder="Name" required />
+            <input
+              type="text"
+              id="amount"
+              placeholder="Amount (e.g., 100.00)"
+              required
+            />
+            <input
+              type="text"
+              id="currency"
+              placeholder="Currency (e.g., EUR)"
+              value="EUR"
+            />
+            <input type="text" id="purpose" placeholder="Purpose (optional)" />
+            <input
+              type="text"
+              id="reference"
+              placeholder="Reference (optional)"
+            />
+            <input
+              type="text"
+              id="remittance"
+              placeholder="Remittance (optional)"
+            />
+            <input
+              type="text"
+              id="information"
+              placeholder="Information (optional)"
+            />
+            <button type="submit">Generate QR Code</button>
+          </form>
+        </div>
+      </div>
+      <div id="output">
+          <!-- Placeholder for displaying QR code -->
+          <div id="qr-code">
+            <img id="qrImage" src="qrcode.png" alt="QR Code"/>
+          </div>
+
+          <!-- Display generated URL -->
+          <div id="url">
+            <p>Generated URL: <input  id="qrUrl"></input></p>
+          </div>
+        </div>
+    </div>
+    <script>
+      document
+        .getElementById("paymentForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          // Get form values
+          const iban = document.getElementById("iban").value;
+          const method = document.getElementById("method").value;
+          const bic = document.getElementById("bic").value;
+          const name = document.getElementById("name").value;
+          const amount = document.getElementById("amount").value;
+          const currency = document.getElementById("currency").value;
+          const purpose = document.getElementById("purpose").value;
+          const reference = document.getElementById("reference").value;
+          const remittance = document.getElementById("remittance").value;
+          const information = document.getElementById("information").value;
+
+          // Construct the URL to send to the API
+          const apiUrl = new URL(
+            "/api/payment",
+            window.location.origin
+          );
+          apiUrl.searchParams.append("method", method);
+          apiUrl.searchParams.append("iban", iban);
+          apiUrl.searchParams.append("bic", bic);
+          apiUrl.searchParams.append("name", name);
+          apiUrl.searchParams.append("amount", amount);
+          apiUrl.searchParams.append("currency", currency);
+          apiUrl.searchParams.append("purpose", purpose);
+          apiUrl.searchParams.append("reference", reference);
+          apiUrl.searchParams.append("remittance", remittance);
+          apiUrl.searchParams.append("information", information);
+
+          const qrImage = document.getElementById("qrImage");
+          qrImage.style.display = "block";
+          qrImage.src = apiUrl; // Assuming the API returns a URL to the QR code
+          const qrUrl = document.getElementById("qrUrl");
+          qrUrl.value = apiUrl;
+          document.getElementById("url").style.display = "block";
+        });
+    </script>
+  </body>
+</html>
